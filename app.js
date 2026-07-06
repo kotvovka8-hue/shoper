@@ -8,7 +8,7 @@ let currentCategory = 'all';
 let searchQuery = '';
 
 // ============================================================
-// ЗАГРУЗКА ТОВАРОВ ИЗ БОТА
+// ЗАГРУЗКА ТОВАРОВ
 // ============================================================
 function loadItems() {
     tg.sendData(JSON.stringify({ action: 'get_items' }));
@@ -34,6 +34,37 @@ tg.onEvent('web_app_data', function(data) {
 });
 
 // ============================================================
+// АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ ПРИ ПЕРЕКЛЮЧЕНИИ ВКЛАДКИ
+// ============================================================
+
+// Обновляем при переключении на вкладку
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        loadItems();
+        showToast('🔄 Обновление...', 'info');
+    }
+});
+
+// Обновляем при возврате в приложение (для мобильных)
+window.addEventListener('focus', function() {
+    loadItems();
+    showToast('🔄 Обновление...', 'info');
+});
+
+// ============================================================
+// ПРОВЕРКА ПАРАМЕТРА REFRESH (для обновления после добавления)
+// ============================================================
+
+function checkRefreshParam() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('refresh') === 'true') {
+        loadItems();
+        showToast('🔄 Магазин обновлен!', 'success');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}
+
+// ============================================================
 // ОТОБРАЖЕНИЕ ТОВАРОВ
 // ============================================================
 function renderItems() {
@@ -50,9 +81,11 @@ function renderItems() {
         grid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 40px 20px;">
                 <p style="font-size: 18px; margin-bottom: 20px;">🔍 В наличии пока нет предметов</p>
-                <button onclick="openOrderModal()" style="padding: 14px 40px; border: none; border-radius: 12px; background: var(--button-color); color: var(--button-text-color); font-weight: 600; cursor: pointer;">
-                    🔍 Не нашли нужный предмет? Закажите прямо сейчас!
-                </button>
+                <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                    <button onclick="openOrderModal()" style="padding: 14px 40px; border: none; border-radius: 12px; background: var(--button-color); color: var(--button-text-color); font-weight: 600; cursor: pointer;">
+                        🔍 Не нашли нужный предмет? Закажите прямо сейчас!
+                    </button>
+                </div>
             </div>
         `;
         return;
@@ -61,12 +94,12 @@ function renderItems() {
     grid.innerHTML = filtered.map(item => {
         const inCart = cart.some(c => c.id === item.id);
         const rarityClass = `rarity-${item.rarity || 'common'}`;
-        const imageUrl = item.image ? `/${item.image}` : '';
+        const imageUrl = item.image ? item.image : '';
         
         return `
             <div class="item-card ${rarityClass}">
                 <div class="item-image">
-                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;">` : '📦'}
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;" onerror="this.parentElement.innerHTML='📦'">` : '📦'}
                 </div>
                 <div class="item-name">${item.name}</div>
                 <div class="item-year">${item.year || ''}</div>
@@ -203,6 +236,7 @@ function showToast(msg, type = 'info') {
 // ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+    checkRefreshParam();
     loadItems();
     updateCartUI();
 });
