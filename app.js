@@ -11,11 +11,10 @@ let searchQuery = '';
 // ЗАГРУЗКА ТОВАРОВ ИЗ БОТА
 // ============================================================
 function loadItems() {
-    // Отправляем запрос боту на получение товаров
     tg.sendData(JSON.stringify({ action: 'get_items' }));
 }
 
-// Обработчик ответа от бота (данные из web_app_data)
+// Обработчик ответа от бота
 tg.onEvent('web_app_data', function(data) {
     try {
         const items = JSON.parse(data.data);
@@ -62,7 +61,6 @@ function renderItems() {
     grid.innerHTML = filtered.map(item => {
         const inCart = cart.some(c => c.id === item.id);
         const rarityClass = `rarity-${item.rarity || 'common'}`;
-        // Путь к картинке на сервере бота (относительный)
         const imageUrl = item.image ? `/${item.image}` : '';
         
         return `
@@ -142,8 +140,7 @@ function checkout() {
     
     tg.sendData(JSON.stringify({
         action: 'order',
-        items: cart.map(c => ({ name: c.name })),
-        userId: tg.initDataUnsafe?.user?.id || 0
+        items: cart.map(c => ({ name: c.name }))
     }));
     
     cart = [];
@@ -154,7 +151,7 @@ function checkout() {
 }
 
 // ============================================================
-// МОДАЛЬНОЕ ОКНО ЗАКАЗА (предметы, которых нет в наличии)
+// МОДАЛЬНОЕ ОКНО ЗАКАЗА
 // ============================================================
 function openOrderModal() {
     const modal = document.getElementById('orderModal');
