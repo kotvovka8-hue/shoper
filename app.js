@@ -2,7 +2,19 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
-let ITEMS = [];
+let ITEMS = [
+  {
+    "id": 3,
+    "name": "Ice Phoenix",
+    "category": "pets",
+    "rarity": "godly",
+    "year": 2017,
+    "price": 19,
+    "stock": 3,
+    "image": "https://kotvovka8-hue.github.io/shoper/images/ice_phoenix_1783378948.jpg",
+    "created": "2026-07-07T02:02:28.255498"
+  }
+];
 let currentCategory = 'all';
 let searchQuery = '';
 
