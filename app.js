@@ -62,11 +62,20 @@ function renderItems() {
         if (inCart) {
             html += '<button class="btn-add" disabled>✅ В корзине</button>';
         } else {
-            html += '<button class="btn-add" onclick="addToCart(' + item.id + ')">🛒 Добавить</button>';
+            html += '<button class="btn-add" data-id="' + item.id + '">🛒 Добавить</button>';
         }
         html += '</div>';
     }
     grid.innerHTML = html;
+    
+    // Назначаем обработчики через делегирование (работает в Telegram)
+    var buttons = grid.querySelectorAll('.btn-add:not([disabled])');
+    for (var j = 0; j < buttons.length; j++) {
+        buttons[j].addEventListener('click', function(e) {
+            var id = parseInt(this.getAttribute('data-id'));
+            addToCart(id);
+        });
+    }
 }
 
 function addToCart(itemId) {
@@ -142,20 +151,47 @@ function showToast(msg) {
     toast._timeout = setTimeout(function() { toast.classList.remove('show'); }, 2000);
 }
 
-// Кнопки категорий
+// Кнопки категорий - через делегирование событий
 document.addEventListener('DOMContentLoaded', function() {
-    var btns = document.querySelectorAll('.category-btn');
-    for (var i = 0; i < btns.length; i++) {
-        btns[i].addEventListener('click', function() {
+    // Категории
+    var categoryContainer = document.querySelector('.categories');
+    if (categoryContainer) {
+        categoryContainer.addEventListener('click', function(e) {
+            var btn = e.target.closest('.category-btn');
+            if (!btn) return;
+            
             var allBtns = document.querySelectorAll('.category-btn');
             for (var j = 0; j < allBtns.length; j++) {
                 allBtns[j].classList.remove('active');
             }
-            this.classList.add('active');
-            currentCategory = this.getAttribute('data-category');
+            btn.classList.add('active');
+            currentCategory = btn.getAttribute('data-category');
             renderItems();
         });
     }
+    
+    // Кнопка оформления заказа
+    var checkoutBtn = document.querySelector('.btn-checkout');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', function() {
+            checkout();
+        });
+    }
+    
+    // Поиск
+    var searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            filterItems();
+        });
+    }
+    
     loadItems();
     updateCartUI();
 });
+
+// Перехват ошибок для отладки
+window.onerror = function(msg, url, line, col, error) {
+    console.log('Ошибка:', msg);
+    return false;
+};
