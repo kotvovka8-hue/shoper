@@ -4,15 +4,15 @@ tg.expand();
 
 let ITEMS = [
   {
-    "id": 8,
+    "id": 2,
     "name": "Ice Phoenix",
     "category": "pets",
     "rarity": "godly",
     "year": 2017,
     "price": 19,
     "stock": 3,
-    "image": "https://kotvovka8-hue.github.io/shoper/images/ice_phoenix_1783377166.jpg",
-    "created": "2026-07-07T01:32:46.967639"
+    "image": "https://kotvovka8-hue.github.io/shoper/images/ice_phoenix_1783376635.jpg",
+    "created": "2026-07-07T01:23:55.284530"
   }
 ];
 let cart = [];
