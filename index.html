@@ -4,46 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MM2 Shop</title>
-    
-    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Подключаем стили -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- ===== TOAST-УВЕДОМЛЕНИЯ ===== -->
+    <!-- TOAST -->
     <div id="toast" class="toast"></div>
 
-    <!-- ===== ШАПКА ===== -->
+    <!-- ШАПКА -->
     <div class="app-header">
         <h1>🔪 MM2 Shop</h1>
         <p>Покупай предметы Murder Mystery 2</p>
     </div>
 
-    <!-- ===== ПОИСК ===== -->
+    <!-- ПОИСК -->
     <div class="search-bar">
         <input type="text" id="searchInput" placeholder="🔍 Поиск предмета..." oninput="filterItems()">
     </div>
 
-    <!-- ===== КАТЕГОРИИ ===== -->
-    <div class="categories" id="categoriesContainer">
+    <!-- КАТЕГОРИИ -->
+    <div class="categories">
         <button class="category-btn active" data-category="all">Все</button>
         <button class="category-btn" data-category="knives">🔪 Ножи</button>
         <button class="category-btn" data-category="guns">🔫 Пистолеты</button>
         <button class="category-btn" data-category="pets">🐾 Питомцы</button>
     </div>
 
-    <!-- ===== СЕТКА ТОВАРОВ ===== -->
-    <div id="itemsGrid" class="items-grid">
-        <div class="loader">
-            <div class="spinner"></div>
-            <p>Загрузка товаров...</p>
+    <!-- СЕТКА ТОВАРОВ -->
+    <div id="itemsGrid" class="items-grid"></div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ЗАКАЗА -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <h2>🔍 Заказать предмет</h2>
+            <p style="color: var(--hint-color); margin-bottom: 16px;">Выберите предмет, которого нет в наличии:</p>
+            <div id="orderItemList" class="order-item-list"></div>
+            <button class="modal-close" style="margin-top: 16px; padding: 10px 30px; border: none; border-radius: 8px; background: var(--section-separator-color); color: var(--text-color); cursor: pointer;">Закрыть</button>
         </div>
     </div>
 
-    <!-- ===== КОРЗИНА (нижняя панель) ===== -->
+    <!-- КОРЗИНА -->
     <div id="cartBar" class="cart-bar">
         <div class="cart-info">
             <span class="cart-count" id="cartCount">🛒 0 товаров</span>
@@ -52,8 +53,7 @@
         <button class="btn-checkout" onclick="checkout()">Оформить заказ</button>
     </div>
 
-    <!-- ===== Подключаем JavaScript ===== -->
+    <!-- ПОДКЛЮЧАЕМ JS -->
     <script src="app.js"></script>
-
 </body>
 </html>
