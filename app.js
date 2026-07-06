@@ -7,7 +7,7 @@ tg.expand();
 // ТОВАРЫ (автоматически сгенерировано ботом)
 // ============================================================
 
-const ITEMS = [];
+const ITEMS = [{"id": 1, "name": "Ice Phoenix", "category": "pets", "rarity": "godly", "year": 2017, "price": 19, "stock": 3, "image": "https://kotvovka8-hue.github.io/shoper/images/ice_phoenix_1783374767.jpg", "created": "2026-07-07T00:52:47.913937"}];
 let cart = [];
 let currentCategory = 'all';
 let searchQuery = '';
