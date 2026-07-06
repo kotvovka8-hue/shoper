@@ -1,3 +1,4 @@
+cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -5,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MM2 Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="toast" class="toast"></div>
@@ -44,6 +45,7 @@
         <button class="btn-checkout" onclick="checkout()">Оформить заказ</button>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
+EOF
