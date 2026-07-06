@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MM2 Shop</title>
+    
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Подключаем стили -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ===== TOAST-УВЕДОМЛЕНИЯ ===== -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ===== ШАПКА ===== -->
+    <div class="app-header">
+        <h1>🔪 MM2 Shop</h1>
+        <p>Покупай предметы Murder Mystery 2</p>
+    </div>
+
+    <!-- ===== ПОИСК ===== -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Поиск предмета..." oninput="filterItems()">
+    </div>
+
+    <!-- ===== КАТЕГОРИИ ===== -->
+    <div class="categories" id="categoriesContainer">
+        <button class="category-btn active" data-category="all">Все</button>
+        <button class="category-btn" data-category="knives">🔪 Ножи</button>
+        <button class="category-btn" data-category="guns">🔫 Пистолеты</button>
+        <button class="category-btn" data-category="pets">🐾 Питомцы</button>
+    </div>
+
+    <!-- ===== СЕТКА ТОВАРОВ ===== -->
+    <div id="itemsGrid" class="items-grid">
+        <div class="loader">
+            <div class="spinner"></div>
+            <p>Загрузка товаров...</p>
+        </div>
+    </div>
+
+    <!-- ===== КОРЗИНА (нижняя панель) ===== -->
+    <div id="cartBar" class="cart-bar">
+        <div class="cart-info">
+            <span class="cart-count" id="cartCount">🛒 0 товаров</span>
+            <span class="cart-total" id="cartTotal">0 ₽</span>
+        </div>
+        <button class="btn-checkout" onclick="checkout()">Оформить заказ</button>
+    </div>
+
+    <!-- ===== Подключаем JavaScript ===== -->
+    <script src="app.js"></script>
+
+</body>
+</html>
