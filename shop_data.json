@@ -1,20 +1,20 @@
 {
-    "next_item_id": 3,
+    "next_item_id": 9,
     "seller": {
         "name": "ВашНик",
         "link": "https://www.roblox.com/users/"
     },
     "items": [
         {
-            "id": 2,
+            "id": 8,
             "name": "Ice Phoenix",
             "category": "pets",
             "rarity": "godly",
             "year": 2017,
             "price": 19,
             "stock": 3,
-            "image": "https://kotvovka8-hue.github.io/shoper/images/ice_phoenix_1783376635.jpg",
-            "created": "2026-07-07T01:23:55.284530"
+            "image": "https://kotvovka8-hue.github.io/shoper/images/ice_phoenix_1783377166.jpg",
+            "created": "2026-07-07T01:32:46.967639"
         }
     ],
     "orders": {}
