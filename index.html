@@ -16,7 +16,7 @@
     </div>
     
     <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="🔍 Поиск предмета...">
+        <input type="text" id="searchInput" placeholder="🔍 Поиск предмета..." oninput="filterItems()">
     </div>
     
     <div class="categories">
@@ -32,7 +32,7 @@
     
     <div style="padding:16px;text-align:center;color:#8888aa;font-size:12px;">
         👆 Нажмите на товар, чтобы скопировать название<br>
-        Затем отправьте его боту
+        Затем отправьте его боту: <b>@MurderMysteryStore_bot</b>
     </div>
     
     <div id="cartBar" class="cart-bar">
@@ -40,7 +40,7 @@
             <span class="cart-count">🛒 0 товаров</span>
             <span class="cart-total">0 ₽</span>
         </div>
-        <button class="btn-checkout" onclick="window.location.href='https://t.me/MM2ShopBot'">📩 К боту</button>
+        <button class="btn-checkout" onclick="window.open('https://t.me/MurderMysteryStore_bot', '_blank')">📩 К боту</button>
     </div>
     
     <script src="app.js"></script>
