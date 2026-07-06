@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MM2 Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="toast" class="toast"></div>
+
+    <div class="app-header">
+        <h1>🔪 MM2 Shop</h1>
+        <p>Покупай предметы Murder Mystery 2</p>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Поиск предмета..." oninput="filterItems()">
+    </div>
+
+    <div class="categories">
+        <button class="category-btn active" data-category="all">Все</button>
+        <button class="category-btn" data-category="knives">🔪 Ножи</button>
+        <button class="category-btn" data-category="guns">🔫 Пистолеты</button>
+        <button class="category-btn" data-category="pets">🐾 Питомцы</button>
+    </div>
+
+    <div id="itemsGrid" class="items-grid"></div>
+
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <h2>🔍 Заказать предмет</h2>
+            <div id="orderItemList"></div>
+            <button class="modal-close" onclick="closeOrderModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <div id="cartBar" class="cart-bar">
+        <div class="cart-info">
+            <span class="cart-count" id="cartCount">🛒 0 товаров</span>
+            <span class="cart-total" id="cartTotal">0 ₽</span>
+        </div>
+        <button class="btn-checkout" onclick="checkout()">Оформить заказ</button>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
