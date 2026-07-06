@@ -1,4 +1,3 @@
-cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -10,33 +9,20 @@ cat > index.html << 'EOF'
 </head>
 <body>
     <div id="toast" class="toast"></div>
-
     <div class="app-header">
         <h1>🔪 MM2 Shop</h1>
         <p>Покупай предметы Murder Mystery 2</p>
     </div>
-
     <div class="search-bar">
         <input type="text" id="searchInput" placeholder="🔍 Поиск предмета..." oninput="filterItems()">
     </div>
-
     <div class="categories">
         <button class="category-btn active" data-category="all">Все</button>
         <button class="category-btn" data-category="knives">🔪 Ножи</button>
         <button class="category-btn" data-category="guns">🔫 Пистолеты</button>
         <button class="category-btn" data-category="pets">🐾 Питомцы</button>
     </div>
-
     <div id="itemsGrid" class="items-grid"></div>
-
-    <div class="modal" id="orderModal">
-        <div class="modal-content">
-            <h2>🔍 Заказать предмет</h2>
-            <div id="orderItemList"></div>
-            <button class="modal-close" onclick="closeOrderModal()">Закрыть</button>
-        </div>
-    </div>
-
     <div id="cartBar" class="cart-bar">
         <div class="cart-info">
             <span class="cart-count" id="cartCount">🛒 0 товаров</span>
@@ -44,8 +30,6 @@ cat > index.html << 'EOF'
         </div>
         <button class="btn-checkout" onclick="checkout()">Оформить заказ</button>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
-EOF
