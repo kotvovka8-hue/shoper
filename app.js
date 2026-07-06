@@ -8,22 +8,34 @@ let currentCategory = 'all';
 let searchQuery = '';
 
 // ============================================================
-// ЗАГРУЗКА ТОВАРОВ
+// ЗАГРУЗКА ТОВАРОВ ИЗ БОТА
 // ============================================================
-async function loadItems() {
+function loadItems() {
+    // Отправляем запрос боту на получение товаров
+    tg.sendData(JSON.stringify({ action: 'get_items' }));
+}
+
+// Обработчик ответа от бота (данные из web_app_data)
+tg.onEvent('web_app_data', function(data) {
     try {
-        const response = await fetch('/api/items');
-        ITEMS = await response.json();
-        renderItems();
-        updateCartUI();
-    } catch (error) {
+        const items = JSON.parse(data.data);
+        if (Array.isArray(items)) {
+            ITEMS = items;
+            renderItems();
+            updateCartUI();
+        } else {
+            ITEMS = [];
+            renderItems();
+        }
+    } catch (e) {
+        console.error('Ошибка загрузки товаров:', e);
         ITEMS = [];
         renderItems();
     }
-}
+});
 
 // ============================================================
-// ОТОБРАЖЕНИЕ
+// ОТОБРАЖЕНИЕ ТОВАРОВ
 // ============================================================
 function renderItems() {
     const grid = document.getElementById('itemsGrid');
@@ -50,6 +62,7 @@ function renderItems() {
     grid.innerHTML = filtered.map(item => {
         const inCart = cart.some(c => c.id === item.id);
         const rarityClass = `rarity-${item.rarity || 'common'}`;
+        // Путь к картинке на сервере бота (относительный)
         const imageUrl = item.image ? `/${item.image}` : '';
         
         return `
@@ -141,21 +154,24 @@ function checkout() {
 }
 
 // ============================================================
-// МОДАЛЬНОЕ ОКНО ЗАКАЗА
+// МОДАЛЬНОЕ ОКНО ЗАКАЗА (предметы, которых нет в наличии)
 // ============================================================
 function openOrderModal() {
     const modal = document.getElementById('orderModal');
     modal.classList.add('active');
     const list = document.getElementById('orderItemList');
     const outOfStock = ITEMS.filter(item => item.stock === 0);
-    list.innerHTML = outOfStock.length === 0 
-        ? '<p style="text-align:center;color:var(--hint-color);padding:20px;">Все предметы есть в наличии</p>'
-        : outOfStock.map(item => `
-            <div onclick="addOrderToCart(${item.id})" style="padding:12px;background:var(--secondary-bg-color);border-radius:8px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;">
+    
+    if (outOfStock.length === 0) {
+        list.innerHTML = '<p style="text-align:center;color:var(--hint-color);padding:20px;">Все предметы есть в наличии</p>';
+    } else {
+        list.innerHTML = outOfStock.map(item => `
+            <div onclick="addOrderToCart(${item.id})" style="padding:12px;background:var(--secondary-bg-color);border-radius:8px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
                 <span>${item.name}</span>
                 <span style="color:var(--hint-color);font-size:12px;">${item.rarity}</span>
             </div>
         `).join('');
+    }
 }
 
 function closeOrderModal() {
@@ -176,7 +192,7 @@ function addOrderToCart(itemId) {
 }
 
 // ============================================================
-// TOAST
+// TOAST-УВЕДОМЛЕНИЯ
 // ============================================================
 function showToast(msg, type = 'info') {
     const toast = document.getElementById('toast');
@@ -187,7 +203,7 @@ function showToast(msg, type = 'info') {
 }
 
 // ============================================================
-// ЗАПУСК
+// ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
     loadItems();
