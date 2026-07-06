@@ -2,37 +2,145 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
-let ITEMS = [
-  {
-    "id": 8,
-    "name": "Ice Phoenix",
-    "category": "pets",
-    "rarity": "godly",
-    "year": 2017,
-    "price": 19,
-    "stock": 3,
-    "image": "https://kotvovka8-hue.github.io/shoper/images/ice_phoenix_1783377166.jpg",
-    "created": "2026-07-07T01:32:46.967639"
-  }
-];
-let cart = [];
+let ITEMS = [];
 let currentCategory = 'all';
 let searchQuery = '';
 
-function loadItems() {
-    renderItems();
-    updateCartUI();
+// ============================================================
+// КОПИРОВАНИЕ В БУФЕР
+// ============================================================
+function copyToClipboard(text) {
+    console.log('📋 Копируем:', text);
+    
+    // Пробуем через Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            showToast('📋 "' + text + '" скопирован! Отправьте боту.');
+            console.log('✅ Скопировано через Clipboard API');
+        }).catch(function(err) {
+            console.log('❌ Ошибка Clipboard API:', err);
+            fallbackCopy(text);
+        });
+    } else {
+        fallbackCopy(text);
+    }
 }
 
+function fallbackCopy(text) {
+    console.log('📋 Используем fallback метод...');
+    try {
+        const el = document.createElement('textarea');
+        el.value = text;
+        el.style.position = 'fixed';
+        el.style.opacity = '0';
+        el.style.pointerEvents = 'none';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        showToast('📋 "' + text + '" скопирован! Отправьте боту.');
+        console.log('✅ Скопировано через fallback');
+    } catch (e) {
+        console.log('❌ Ошибка fallback:', e);
+        showToast('❌ Не удалось скопировать. Попробуйте вручную.');
+    }
+}
+
+// ============================================================
+// ЗАГРУЗКА ТОВАРОВ
+// ============================================================
+function loadItems() {
+    console.log('🔄 Загружаем товары...');
+    
+    // Пробуем получить товары из глобальной переменной (если есть)
+    if (window.ITEMS && Array.isArray(window.ITEMS) && window.ITEMS.length > 0) {
+        console.log('✅ Товары из глобальной переменной:', window.ITEMS.length);
+        ITEMS = window.ITEMS;
+        renderItems();
+        return;
+    }
+    
+    // Если нет - запрашиваем у бота
+    try {
+        tg.sendData(JSON.stringify({ action: 'get_items' }));
+    } catch (e) {
+        console.log('❌ Ошибка отправки:', e);
+        // Показываем тестовые товары для демонстрации
+        showDemoItems();
+    }
+}
+
+// ============================================================
+// ТЕСТОВЫЕ ТОВАРЫ (если бот не отвечает)
+// ============================================================
+function showDemoItems() {
+    console.log('📦 Показываем демо-товары');
+    ITEMS = [
+        {
+            "id": 1,
+            "name": "Nightblade",
+            "category": "knives",
+            "rarity": "godly",
+            "year": 2020,
+            "price": 1500,
+            "stock": 5,
+            "image": ""
+        },
+        {
+            "id": 2,
+            "name": "Luger",
+            "category": "guns",
+            "rarity": "godly",
+            "year": 2019,
+            "price": 1200,
+            "stock": 3,
+            "image": ""
+        }
+    ];
+    renderItems();
+}
+
+// ============================================================
+// ОБРАБОТЧИК ОТВЕТА ОТ БОТА
+// ============================================================
+tg.onEvent('web_app_data', function(data) {
+    console.log('📩 Получены данные от бота:', data.data);
+    try {
+        const items = JSON.parse(data.data);
+        if (Array.isArray(items) && items.length > 0) {
+            console.log('✅ Загружено товаров:', items.length);
+            ITEMS = items;
+            renderItems();
+        } else {
+            console.log('⚠️ Товаров нет, показываем демо');
+            showDemoItems();
+        }
+    } catch (e) {
+        console.log('❌ Ошибка парсинга:', e);
+        showDemoItems();
+    }
+});
+
+// ============================================================
+// ОТОБРАЖЕНИЕ ТОВАРОВ
+// ============================================================
 function renderItems() {
     const grid = document.getElementById('itemsGrid');
+    if (!grid) {
+        console.log('❌ Элемент itemsGrid не найден!');
+        return;
+    }
     
-    const filtered = ITEMS.filter(item => {
+    console.log('🎨 Рендерим товары, всего:', ITEMS.length);
+    
+    const filtered = ITEMS.filter(function(item) {
         const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchCategory = currentCategory === 'all' || item.category === currentCategory;
         const inStock = item.stock > 0;
         return matchSearch && matchCategory && inStock;
     });
+    
+    console.log('🔍 Отфильтровано:', filtered.length);
     
     if (filtered.length === 0) {
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:#8888aa;">🔍 Товаров не найдено</div>';
@@ -42,14 +150,13 @@ function renderItems() {
     let html = '';
     for (let i = 0; i < filtered.length; i++) {
         const item = filtered[i];
-        const inCart = cart.some(c => c.id === item.id);
         const rarityClass = 'rarity-' + (item.rarity || 'common');
         const imageUrl = item.image || '';
         
-        html += '<div class="item-card ' + rarityClass + '">';
+        html += '<div class="item-card ' + rarityClass + '" onclick="copyToClipboard(\'' + item.name.replace(/'/g, "\\'") + '\')">';
         html += '<div class="item-image">';
         if (imageUrl) {
-            html += '<img src="' + imageUrl + '" alt="' + item.name + '" onerror="this.parentElement.innerHTML='📦'">';
+            html += '<img src="' + imageUrl + '" alt="' + item.name + '" onerror="this.parentElement.innerHTML=\'📦\'">';
         } else {
             html += '📦';
         }
@@ -59,119 +166,86 @@ function renderItems() {
         html += '<div class="item-rarity">' + (item.rarity || 'Common') + '</div>';
         html += '<div class="item-price">💰 ' + item.price + ' ₽</div>';
         html += '<div class="item-stock">✅ ' + item.stock + ' шт.</div>';
-        html += '<button class="btn-add" data-id="' + item.id + '">';
-        if (inCart) {
-            html += '✅ В корзине';
-        } else {
-            html += '🛒 Добавить';
-        }
-        html += '</button>';
+        html += '<div class="copy-hint">👆 Нажмите для копирования</div>';
         html += '</div>';
     }
     grid.innerHTML = html;
-    
-    const buttons = grid.querySelectorAll('.btn-add:not([disabled])');
-    for (let i = 0; i < buttons.length; i++) {
-        buttons[i].addEventListener('click', function(e) {
-            const id = parseInt(this.getAttribute('data-id'));
-            addToCart(id);
-        });
-    }
 }
 
-function addToCart(itemId) {
-    const item = ITEMS.find(i => i.id === itemId);
-    if (!item) return;
-    if (cart.some(c => c.id === itemId)) {
-        showToast('Уже в корзине');
-        return;
-    }
-    cart.push({ id: item.id, name: item.name, price: item.price });
-    updateCartUI();
-    renderItems();
-    showToast(item.name + ' добавлен');
-}
-
-function updateCartUI() {
-    const bar = document.getElementById('cartBar');
-    const count = document.getElementById('cartCount');
-    const total = document.getElementById('cartTotal');
-    if (cart.length === 0) {
-        bar.classList.remove('active');
-        return;
-    }
-    bar.classList.add('active');
-    count.textContent = '🛒 ' + cart.length + ' товаров';
-    let sum = 0;
-    for (let i = 0; i < cart.length; i++) {
-        sum += cart[i].price;
-    }
-    total.textContent = sum + ' ₽';
-}
-
-function checkout() {
-    if (cart.length === 0) {
-        showToast('Корзина пуста');
-        return;
-    }
-    if (cart.length > 3) {
-        showToast('Не более 3 предметов');
-        return;
-    }
-    tg.sendData(JSON.stringify({
-        action: 'order',
-        items: cart.map(c => ({ name: c.name }))
-    }));
-    cart = [];
-    updateCartUI();
-    renderItems();
-    showToast('Заказ оформлен!');
-    setTimeout(() => tg.close(), 2000);
-}
-
+// ============================================================
+// ПОИСК
+// ============================================================
 function filterItems() {
-    searchQuery = document.getElementById('searchInput').value;
+    const input = document.getElementById('searchInput');
+    searchQuery = input ? input.value : '';
     renderItems();
 }
 
-function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.className = 'toast show';
-    clearTimeout(toast._timeout);
-    toast._timeout = setTimeout(() => toast.classList.remove('show'), 2000);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
+// ============================================================
+// КАТЕГОРИИ
+// ============================================================
+function setupCategories() {
     const container = document.querySelector('.categories');
-    if (container) {
-        container.addEventListener('click', function(e) {
-            const btn = e.target.closest('.category-btn');
-            if (!btn) return;
+    if (!container) return;
+    
+    const buttons = container.querySelectorAll('.category-btn');
+    for (let i = 0; i < buttons.length; i++) {
+        buttons[i].onclick = function(e) {
+            e.preventDefault();
             const allBtns = container.querySelectorAll('.category-btn');
             for (let j = 0; j < allBtns.length; j++) {
                 allBtns[j].classList.remove('active');
             }
-            btn.classList.add('active');
-            currentCategory = btn.getAttribute('data-category');
+            this.classList.add('active');
+            currentCategory = this.getAttribute('data-category');
             renderItems();
-        });
+        };
     }
-    
-    const checkoutBtn = document.querySelector('.btn-checkout');
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', function() {
-            checkout();
-        });
+}
+
+// ============================================================
+// TOAST УВЕДОМЛЕНИЯ
+// ============================================================
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.className = 'toast show';
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function() {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// ============================================================
+// ОБНОВЛЕНИЕ ТОВАРОВ ИЗ ГЛОБАЛЬНОЙ ПЕРЕМЕННОЙ
+// ============================================================
+window.updateItems = function(newItems) {
+    if (Array.isArray(newItems)) {
+        ITEMS = newItems;
+        renderItems();
+        console.log('🔄 Товары обновлены:', ITEMS.length);
     }
+};
+
+// ============================================================
+// ЗАПУСК
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ DOM загружен!');
+    setupCategories();
     
+    // Поиск
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.oninput = function() {
             filterItems();
-        });
+        };
     }
     
     loadItems();
-    updateCartUI();
+    console.log('✅ Магазин готов!');
+    
+    // Логируем для отладки
+    console.log('📱 Telegram WebApp:', tg ? 'доступен' : 'недоступен');
 });

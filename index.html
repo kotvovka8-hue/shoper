@@ -9,27 +9,40 @@
 </head>
 <body>
     <div id="toast" class="toast"></div>
+    
     <div class="app-header">
         <h1>🔪 MM2 Shop</h1>
         <p>Покупай предметы Murder Mystery 2</p>
     </div>
+    
     <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="🔍 Поиск предмета..." oninput="filterItems()">
+        <input type="text" id="searchInput" placeholder="🔍 Поиск предмета...">
     </div>
+    
     <div class="categories">
         <button class="category-btn active" data-category="all">Все</button>
         <button class="category-btn" data-category="knives">🔪 Ножи</button>
         <button class="category-btn" data-category="guns">🔫 Пистолеты</button>
         <button class="category-btn" data-category="pets">🐾 Питомцы</button>
     </div>
-    <div id="itemsGrid" class="items-grid"></div>
+    
+    <div id="itemsGrid" class="items-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:#8888aa;">⏳ Загрузка...</div>
+    </div>
+    
+    <div style="padding:16px;text-align:center;color:#8888aa;font-size:12px;">
+        👆 Нажмите на товар, чтобы скопировать название<br>
+        Затем отправьте его боту
+    </div>
+    
     <div id="cartBar" class="cart-bar">
         <div class="cart-info">
-            <span class="cart-count" id="cartCount">🛒 0 товаров</span>
-            <span class="cart-total" id="cartTotal">0 ₽</span>
+            <span class="cart-count">🛒 0 товаров</span>
+            <span class="cart-total">0 ₽</span>
         </div>
-        <button class="btn-checkout" onclick="checkout()">Оформить заказ</button>
+        <button class="btn-checkout" onclick="window.location.href='https://t.me/MM2ShopBot'">📩 К боту</button>
     </div>
+    
     <script src="app.js"></script>
 </body>
 </html>
