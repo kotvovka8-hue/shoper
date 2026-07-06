@@ -4,18 +4,6 @@
         "name": "ВашНик",
         "link": "https://www.roblox.com/users/"
     },
-    "items": [
-        {
-            "id": 7,
-            "name": "Ice Phoenix",
-            "category": "pets",
-            "rarity": "godly",
-            "year": 2017,
-            "price": 19,
-            "stock": 3,
-            "image": "https://kotvovka8-hue.github.io/shoper/images/ice_phoenix_1783376253.jpg",
-            "created": "2026-07-07T01:17:33.645093"
-        }
-    ],
+    "items": [],
     "orders": {}
 }
